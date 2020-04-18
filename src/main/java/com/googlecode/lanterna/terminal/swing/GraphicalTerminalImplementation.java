@@ -32,6 +32,7 @@ import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.StringReader;
@@ -538,6 +539,12 @@ abstract class GraphicalTerminalImplementation implements IOSafeTerminal {
         Font font = getFontForCharacter(character);
         g.setFont(font);
         FontMetrics fontMetrics = g.getFontMetrics();
+        int charWidth = fontMetrics.charsWidth(new char[]{character.getCharacter()}, 0, 1);
+        if (charWidth > getFontWidth()) {
+            Font updated = font.deriveFont(Font.PLAIN, AffineTransform.getScaleInstance((double)getFontWidth() / charWidth, 1));
+            g.setFont(updated);
+            //fontMetrics = g.getFontMetrics();
+        }
         g.drawString(Character.toString(character.getCharacter()), x, y + fontHeight - fontMetrics.getDescent() + 1);
 
         if(character.isCrossedOut()) {
